@@ -81,7 +81,7 @@ int main() {
     cout << "A B C: ";
     for(auto& [elem, t] : minterms)
         cout << elem << ' ';
-    cout << endl;
+    cout << endl << endl;
 }
 
 

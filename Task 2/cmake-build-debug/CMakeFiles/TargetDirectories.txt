@@ -1,3 +1,0 @@
-D:/Studies/Senior-1 Computer/Fall 2024/PHM211s - Discrete Maths/Project/PHM211-Discrete-Maths-Project/Task 2/cmake-build-debug/CMakeFiles/Task_2.dir
-D:/Studies/Senior-1 Computer/Fall 2024/PHM211s - Discrete Maths/Project/PHM211-Discrete-Maths-Project/Task 2/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Studies/Senior-1 Computer/Fall 2024/PHM211s - Discrete Maths/Project/PHM211-Discrete-Maths-Project/Task 2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
