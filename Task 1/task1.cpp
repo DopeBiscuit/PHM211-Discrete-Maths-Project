@@ -124,7 +124,7 @@ int main() {
     int numVariables = variables.size();
     vector<char> varList(variables.begin(), variables.end());
     int rows = pow(2, numVariables);
-    bool satisfiable = false, valid = false;
+    bool satisfiable = false, valid = true; // Argument is valid by default, and falsifiable only if a counterexample is found
 
     // Display header
     cout << "\nTruth Table:\n";
@@ -152,7 +152,7 @@ int main() {
 
         if (allPremisesTrue) {
             satisfiable = true;
-            if (!conclusionResult) valid = false; // Counterexample
+            if (!conclusionResult) valid = false; // Counterexample found: If premises are true and conclusion is false, argument is invalid (falsifiable)
         }
     }
 
