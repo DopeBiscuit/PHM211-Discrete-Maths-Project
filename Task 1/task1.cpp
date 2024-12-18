@@ -28,27 +28,52 @@ bool evaluatePostfix(const string& postfix, const map<char, bool>& values) {
             stack.push(token == '1');
         }
         else if (token == '!') {
+            if (stack.empty()) {
+                cerr << "Error: Not enough operands for '!'\n";
+                return false;
+            }
             bool a = stack.top(); stack.pop();
             stack.push(NOT(a));
         }
         else if (token == '&') {
+            if (stack.size() < 2) {
+                cerr << "Error: Not enough operands for '&'\n";
+                return false;
+            }
             bool b = stack.top(); stack.pop();
             bool a = stack.top(); stack.pop();
             stack.push(AND(a, b));
         }
         else if (token == '|') {
+            if (stack.size() < 2) {
+                cerr << "Error: Not enough operands for '|'\n";
+                return false;
+            }
             bool b = stack.top(); stack.pop();
             bool a = stack.top(); stack.pop();
             stack.push(OR(a, b));
         }
         else if (token == '>') { // Implication
+            if (stack.size() < 2) {
+                cerr << "Error: Not enough operands for '>'\n";
+                return false;
+            }
             bool b = stack.top(); stack.pop();
             bool a = stack.top(); stack.pop();
             stack.push(IMPLIES(a, b));
         }
+        else {
+            cerr << "Error: Unknown token '" << token << "'\n";
+            return false;
+        }
+    }
+    if (stack.size() != 1) {
+        cerr << "Error: Malformed postfix expression. Stack size: " << stack.size() << "\n";
+        return false;
     }
     return stack.top();
 }
+
 
 // Function to convert infix to postfix using Shunting Yard Algorithm
 string infixToPostfix(const string& infix) {
@@ -57,30 +82,39 @@ string infixToPostfix(const string& infix) {
     map<char, int> precedence = { {'!', 3}, {'&', 2}, {'|', 1}, {'>', 0}, {'<', 0} };
 
     for (size_t i = 0; i < infix.size(); ++i) {
-        char token = infix[i];
+        if (infix[i] == ' ') continue; // Ignore spaces
 
-        if (isalpha(token) || token == '1' || token == '0') {
+        if (isalpha(infix[i]) || infix[i] == '1' || infix[i] == '0') {
             // Operand: directly append to postfix
-            postfix += token;
+            postfix += infix[i];
         }
-        else if (token == '(') {
-            // Left parenthesis: push onto the stack
-            operators.push(token);
+        else if (infix[i] == '(') {
+            // Left parenthesis
+            operators.push(infix[i]);
         }
-        else if (token == ')') {
-            // Right parenthesis: pop until left parenthesis is found
+        else if (infix[i] == ')') {
+            // Right parenthesis: pop until '('
             while (!operators.empty() && operators.top() != '(') {
                 postfix += operators.top();
                 operators.pop();
             }
             if (!operators.empty()) operators.pop(); // Remove '('
         }
-        else { // Operator
-            while (!operators.empty() && precedence[token] <= precedence[operators.top()]) {
+        else if (infix[i] == '-' && i + 1 < infix.size() && infix[i + 1] == '>') {
+            // Handle '->' as a single implication operator
+            while (!operators.empty() && precedence['>'] <= precedence[operators.top()]) {
                 postfix += operators.top();
                 operators.pop();
             }
-            operators.push(token);
+            operators.push('>');
+            ++i; // Skip the '>' part of '->'
+        }
+        else { // Other operators: !, &, |
+            while (!operators.empty() && precedence[infix[i]] <= precedence[operators.top()]) {
+                postfix += operators.top();
+                operators.pop();
+            }
+            operators.push(infix[i]);
         }
     }
 
@@ -92,7 +126,6 @@ string infixToPostfix(const string& infix) {
 
     return postfix;
 }
-
 
 int main() {
     int numPremises;
