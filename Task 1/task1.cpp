@@ -20,14 +20,14 @@ bool BICONDITIONAL(bool a, bool b) { return a == b; }
 // Function to evaluate a postfix logical expression
 bool evaluatePostfix(const string& postfix, const map<char, bool>& values) {
     stack<bool> stack;
-    for (char token : postfix) {
-        if (isalpha(token)) {
+    for (char token : postfix) { // Iterate over tokens in the postfix expression
+        if (isalpha(token)) { // variables (operands)
             stack.push(values.at(token));
         }
-        else if (token == '1' || token == '0') {
+        else if (token == '1' || token == '0') { // constants i.e. 1 or 0 (operands)
             stack.push(token == '1');
         }
-        else if (token == '!') {
+        else if (token == '!') { // NOT
             if (stack.empty()) {
                 cerr << "Error: Not enough operands for '!'\n";
                 return false;
@@ -35,7 +35,7 @@ bool evaluatePostfix(const string& postfix, const map<char, bool>& values) {
             bool a = stack.top(); stack.pop();
             stack.push(NOT(a));
         }
-        else if (token == '&') {
+        else if (token == '&') { // AND
             if (stack.size() < 2) {
                 cerr << "Error: Not enough operands for '&'\n";
                 return false;
@@ -44,7 +44,7 @@ bool evaluatePostfix(const string& postfix, const map<char, bool>& values) {
             bool a = stack.top(); stack.pop();
             stack.push(AND(a, b));
         }
-        else if (token == '|') {
+        else if (token == '|') { // OR
             if (stack.size() < 2) {
                 cerr << "Error: Not enough operands for '|'\n";
                 return false;
@@ -67,7 +67,7 @@ bool evaluatePostfix(const string& postfix, const map<char, bool>& values) {
             return false;
         }
     }
-    if (stack.size() != 1) {
+    if (stack.size() != 1) { // There should be exactly one value in the stack (the final result) after evaluating the expression
         cerr << "Error: Malformed postfix expression. Stack size: " << stack.size() << "\n";
         return false;
     }
@@ -75,13 +75,14 @@ bool evaluatePostfix(const string& postfix, const map<char, bool>& values) {
 }
 
 
-// Function to convert infix to postfix using Shunting Yard Algorithm
+// Function to convert infix to postfix using Shunting Yard Algorithm 
+// (stacking an expression in postfix form by considering precedence of operators)
 string infixToPostfix(const string& infix) {
     string postfix;
     stack<char> operators;
     map<char, int> precedence = { {'!', 3}, {'&', 2}, {'|', 1}, {'>', 0}, {'<', 0} };
 
-    for (size_t i = 0; i < infix.size(); ++i) {
+    for (size_t i = 0; i < infix.size(); ++i) { 
         if (infix[i] == ' ') continue; // Ignore spaces
 
         if (isalpha(infix[i]) || infix[i] == '1' || infix[i] == '0') {
@@ -157,7 +158,7 @@ int main() {
     int numVariables = variables.size();
     vector<char> varList(variables.begin(), variables.end());
     int rows = pow(2, numVariables);
-    bool satisfiable = false, valid = true; // Argument is valid by default, and falsifiable only if a counterexample is found
+    bool satisfiable = false, valid = true; // Argument is valid by default, and falsifiable only when a counterexample is found
 
     // Display header
     cout << "\nTruth Table:\n";
@@ -198,3 +199,46 @@ int main() {
     std::cin.get(); // Waits for user input
     return 0;
 }
+
+/********************* Example Usage **********************
+(arguments bounded by '*' are user inputs):
+-----------------------------------------------------------
+Enter the number of premises: * 2 * 
+Enter premise 1: * (k | m) -> !a *
+Enter premise 2: * a | m *
+Enter the conclusion: * a | !k *
+
+Truth Table:
+a       k       m       P1      P2      C
+0       0       0       1       0       1
+0       0       1       1       1       1
+0       1       0       1       0       0
+0       1       1       1       1       0
+1       0       0       1       1       1
+1       0       1       0       1       1
+1       1       0       0       1       1
+1       1       1       0       1       1
+
+Analysis Results:
+The set of statements is SATISFIABLE.
+The argument is FALSIFIABLE.
+
+-----------------------------------------------------------
+Enter the number of premises: * 2 *
+Enter premise 1: * p -> q *
+Enter premise 2: * p *
+Enter the conclusion: * q *
+
+Truth Table:
+p       q       P1      P2      C
+0       0       1       0       0
+0       1       1       0       1
+1       0       0       1       0
+1       1       1       1       1
+
+Analysis Results:
+The set of statements is SATISFIABLE.
+The argument is VALID.
+
+-----------------------------------------------------------
+**********************************************************/
