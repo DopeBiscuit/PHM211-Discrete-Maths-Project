@@ -4,6 +4,7 @@
 using namespace std;
 
 bool logic(int& i);
+bool logic2(int& i);
 string to_str(int& n);
 vector<string> simplify(vector<pair<string, string>>& minterms);
 
@@ -32,6 +33,7 @@ int main() {
 
     cout << endl << "********************************************************************************";
 
+    /*
     // Generate Truth table for simplified circuit
     if(simple.size()){
         for(int i{0};i < 8; i++){
@@ -53,6 +55,7 @@ int main() {
         }
     }
 
+
     cout << "\nSimplified Circuit Expression:\t";
     for(int i{}; i < simple.size(); i++){
         cout << simple[i];
@@ -62,25 +65,39 @@ int main() {
             cout << " + ";
     }
 
-    if(!simple.size()){
+     if(!simple.size()){
         cout << tt[0];
     }
+    */
+
 
     // Print simplified expression truth table
     cout << "\nSimplified Circuit Truth Table: \n";
+
+    bool equal{true};
+    for(int i{};i < 8; i++) {
+        tt_simple[i] = logic2(i);
+        equal = (tt_simple[i] == tt[i]);
+    }
+
     for(int i{};i < 8; i++){
         cout << "\t" << (i >> 2 & 1) << ' ' << (i >> 1 & 1) << ' ' << (i & 1) << ":\t\t" << tt_simple[i] << endl;
     }
 
-    cout << "*Since Truth tables are the same, therefore they are equivalent expressions* \n" << endl;
+    if(equal)
+        cout << "*Since Truth tables are the same, therefore they are equivalent expressions* \n" << endl;
+    else
+        cout << "*Since Truth tables are different, therefore they are not equivalent expressions* \n" << endl;
     cout << endl << "********************************************************************************" << endl;
 
 
     // Print minterms of original circuit
     cout << "Input values that make both circuit satisfiable:\n";
     cout << "A B C: ";
-    for(auto& [elem, t] : minterms)
-        cout << elem << ' ';
+    for(int i{};i < 8; i++){
+        if(tt[i] && tt_simple[i])
+            cout << to_str(i) << ' ';
+    }
     cout << endl << endl;
 }
 
@@ -103,6 +120,15 @@ bool logic(int& i){
 //    return (((a |b) & (a & b)) | (b & (!b)) | (b & c));
 }
 
+bool logic2(int& i){
+    // The simplified boolean eq
+    bool a = (i & 1);
+    bool b = (i & 2);
+    bool c = (i & 4);
+
+    return (a | c) & b;
+}
+
 string to_str(int& n){
     string val = "";
     for(int i{2}; i >= 0; i--){
@@ -119,18 +145,18 @@ vector<string> simplify(vector<pair<string, string>>& minterms){
     // construct current pairs
     for(int i{};i < minterms.size(); i++){
         int cnt = 0;
-        for(auto& c : minterms[i].first) {
-            cnt += (c == '1');
+            for(auto& c : minterms[i].first) {
+                cnt += (c == '1');
+            }
+            next_pairs[cnt].push_back(minterms[i]);
         }
-        next_pairs[cnt].push_back(minterms[i]);
-    }
 
-    while(change){
-        curr_pairs = next_pairs;
-        next_pairs.clear(); next_pairs.resize(4);
-        change = false;
+        while(change){
+            curr_pairs = next_pairs;
+            next_pairs.clear(); next_pairs.resize(4);
+            change = false;
 
-        for(int i{}; i < 3; i++){
+            for(int i{}; i < 3; i++){
             for(auto [elem, t1] : curr_pairs[i]){
                 bool prime{true};
                 for(auto& [cmp, t2] : curr_pairs[i + 1]) {
@@ -186,3 +212,35 @@ vector<string> simplify(vector<pair<string, string>>& minterms){
 
     return simple;
 }
+
+
+/***
+ *      TEST CASE
+ *  Original Circuit Truth Table:
+        0 0 0:          0
+        0 0 1:          0
+        0 1 0:          0
+        0 1 1:          1
+        1 0 0:          0
+        1 0 1:          0
+        1 1 0:          1
+        1 1 1:          1
+
+********************************************************************************
+Simplified Circuit Truth Table:
+        0 0 0:          0
+        0 0 1:          0
+        0 1 0:          0
+        0 1 1:          1
+        1 0 0:          0
+        1 0 1:          0
+        1 1 0:          1
+        1 1 1:          1
+*Since Truth tables are the same, therefore they are equivalent expressions*
+
+
+********************************************************************************
+Input values that make both circuit satisfiable:
+A B C: 011 110 111
+
+ ***/
