@@ -192,8 +192,13 @@ int main() {
 
     // Results
     cout << "\nAnalysis Results:\n";
-    cout << (satisfiable ? "The set of statements is SATISFIABLE.\n" : "The set of statements is NOT SATISFIABLE.\n");
-    cout << (valid ? "The argument is VALID.\n" : "The argument is FALSIFIABLE.\n");
+    if (!satisfiable) {
+        cout << "The set of statements is NOT SATISFIABLE.\n";
+        cout << "The argument is INVALID.\n"; // If premises are not satisfiable, argument cannot be valid
+    } else {
+        cout << "The set of statements is SATISFIABLE.\n";
+        cout << (valid ? "The argument is VALID.\n" : "The argument is FALSIFIABLE.\n");
+    }
 
     std::cout << "Press Enter to exit...";
     std::cin.get(); // Waits for user input
